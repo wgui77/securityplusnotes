@@ -1,0 +1,31 @@
+###################################################################
+#
+# Part 1 Log configurations
+#
+
+# Server Compoment Log file name
+LOG_FILENAME = e2ee.log
+
+# LOG_LEVEL = high |  LOG_LEVEL = middle | LOG_LEVEL = low
+# In normal operation, using "middle" level is recommended.
+LOG_LEVEL = high
+
+
+###################################################################
+#
+# Part 2  Key configurations
+#
+# Accessing 2 keys, RSA for transaction keys, Des3/AES for storage encryption/decryption.
+# all the keys are protected in HSM
+
+
+#key alias name specified in Security world, usually, don't need to change these two fields
+#Transaction Key identifier
+STORE_KEY_ALIAS =simplemoduleaestoken
+TRANS_KEY_ALIAS =simplemodulersatoken
+
+#Store key type: DES3, AES-128, AES-256
+STORE_KEY_TYPE=AES-128
+
+#Transaction key type: RSA-1024
+TRANS_KEY_TYPE =RSA-1024
