@@ -486,45 +486,180 @@ prevention system (HIPS)
 
 
 Compare and contrast security implications of different architecture models.
-- Architecture and
-infrastructure concepts
-−Cloud
-◦Responsibility matrix
-◦Hybrid considerations
-◦Third-party vendors
-−Infrastructure as code (IaC)
-−Serverless
-−Microservices
-−Network infrastructure
-−Physical isolation
-ըAir-gapped
-◦Logical segmentation
-## ◦ Software-defined
-networking (SDN)
-−On-premises
-−Centralized vs. decentralized
+- Architecture and infrastructure concepts
+− Cloud
+    - Service hosted by a provider instead of entirely on company-owned hardware.
+    - example: amazon web services, microsoft, google.
+    - advantage: scalabality, high availablity, fast deployment, reduced hardware cose, built-in redundancy.
+    - risk: Misconfiguration storage, data exposure, vendor lock-in, shared infrastruture risks, internet dependency
+
+- Responsibility matrix
+    - responsibility among IaaS, PaaS, SaaS. 
+    - lets refer this back to fundamental image. 
+- Hybrid considerations
+    - some on prem, some on cloud
+    - benefits: flexible, gradual migration, sensitive data stays on prem
+    - cons: complex security management, difficult identity integration, inconsistent policies, large aatack surface
+- Third-party vendors
+    - cloud is a third party..
+    - risk: supply chain attacks, vendor outages, weak vendor security, compliance issues
+    - controls: vendor assessments, contracts/ SLAs, audits, continous monitoring.
+− Infrastructure as code (IaC)
+    - IaC = managing infrastructure using code/scripts instead of manual setup.
+    - example: red hat ansible. 
+        - ansible: Ansible playbooks to automate the provisioning, configuration, and security hardening of resources across diverse environments like OpenStack, Kubernetes, and Azure. This automation ensures consistent configurations, minimizes human errors, and enhances the security of systems.
+    - example: hashicorp terraform
+        - Terraform enables users to describe their desired infrastructure state using a declarative language, specifically the HashiCorp Configuration Language (HCL). Instead of manually clicking through web consoles or writing step-by-step shell scripts, you write code that tells Terraform exactly what your infrastructure should look like. Terraform then handles the heavy lifting of creating an execution plan, determining dependencies, and provisioning the components safely.
+    - advantages:
+        - consistency, repeated deployment, fewer manual mistakes, faster recovery
+    - risk:
+        - misconfiguratons spread quickly, secrets stored in code, insecure templates, poor access control    
+- Serverless
+    - developers run code without managing servers
+    - example: amazon web services lambda
+        -allows you to run code without provisioning or managing servers. You simply upload your code, and Lambda automatically scales your application in response to events and handles all underlying infrastructure administration
+    - advantages: reduced server management, automatic scaling, smaller infrastructure burden
+    - risk: less visibility / control, dependency vulnerabilities, event injection attacks, IAM misconfigurations
+− Microservices
+    - applications splot into  many small independent services. (auth service, payment service, inventory service, notificatoin service)
+    - advantage: fault isolaton, easier scaling, independent updates.
+    - risk: more APIs to secure, increased attack surface, complex authentication, service-to-service trust issues. 
+− Network infrastructure
+    - Key takeaway: The Router connects networks, the Switch connects devices, the Firewall filters by rule, VLANs isolate within the switch, and IDS/IPS hunts for attacks inside the traffic.
+    - Router 
+        - Connects different networks together. It directs data packets between these networks using the best path
+        - NAT (network address translation): allows many deviced on private network to share a single public IP address. 
+        - what is a packet?
+            - every packet has a header attached to it,
+                - source IP (return address)
+                - destination IP (where it is going)
+                - packet number: (This is packet 4 of 500)
+    - Switch
+        - Connects devices within the same network (e.g., all computers in an office). It learns which device is connected to which port and sends data only to the intended recipient.
+        - MAC address table: remebers which port leads to which device's physical address. 
+    - Firewall
+        -  Filters traffic based on rules (e.g., "allow web browsing," "block file-sharing," "deny traffic from a specific country"). It inspects packets and decides to pass, drop, or reject them.
+        - stateful inspection: tracks the state of active connections
+        - Types:
+            - hardware firewall (standalone appliance)
+            - next-generation firewall (NGFW): addes application awreness by reading further than header. looks into payload. (e.g. allowing "facebook", but blocking "facebook games")
+            - virtual /  cloud firewall: (AWS security groups)
+    - VLAN (virtual local area network)
+        - Logically divides a single physical switch (or network) into multiple, isolated virtual networks. Devices on different VLANs cannot talk to each other without a router.
+        - Tagging (802.1Q): adds a small tag to each Ethernet frame to identify which VLAN it belongs to 
+    - IDS (Intrision Detection System)/IPS (Intrusion Prevention System)
+        - Looks at packet's payload
+        - Detect signatures of attacks (SQL injection, malware aptterns, port scans)
+        - Action:
+            - IDS alerts only (logs, emails admin)
+            - IPS blocks inline (drops the malicous packet)
+    - advantage: central traffic control, segmentation, monitoring
+    - risk: single point of failure, misconfigured devices, lateral movement if flat network 
+− Physical isolation
+    - Keeping systems physically separated.
+    - Air-gapped (Air-gapped = completely disconnected from other networks and internet.)
+        - used in: military, critical infrastructure, nuclear facilities
+        - advatange: extremely hard to remotely attack
+        - risk: usb malware, insider threats, difficult updates/patching
+- Logical segmentation
+    - Separating systems logically rather than physically.
+    - VLAN / ACL / subnets
+    - advatange: limits lateral movement, better access control, lower cost than physical separation
+    - risk: misconfigurations, VLAN hopping, shared infrastructure
+- Software-defined networking (SDN)
+    - SDN separates: control plane and data plane. Network becomes programmable
+    - advantage: centralised management, dynamic segmentation, faster response
+    - risk: controller compromise = huge risk, API vulnerabilities, misconfigurations affect entire network
+− On-premises
+    - Infrastructure hosted locally by the organization.
+    - advantage: full control, better customization, local data governance.
+    - risk: expensive, organisation handles everything, requires skilled staff
+− Centralized
+    - one central control location
+    - advantage: easier management, consistent security
+    - risk: single point of failure
+- Decentralized
+    - multiple Distributed system
+    - advantage: better resilience, reduced single point failures
+    - risk: harder management, inconsistent policies
 −Containerization
-−Virtualization
-−IoT
-−Industrial control systems
-(ICS)/supervisory control and
-data acquisition (SCADA)
+    - Containers package apps + dependencies together.
+    - Docker and Kubernetes
+    - advantage: Lightweight, fast deployment, consistency
+    - risk: container escape, insecure image, shared kernel vulnerabilities, weak orchestration security
+        - what is shared kernel vulnerabilities
+            - A shared kernel vulnerability occurs because containers do not have their own operating system; instead, every container on a host shares the single, underlying Linux kernel of that host.If a hacker breaks out of one container, the shared kernel gives them a direct pathway to compromise the host machine and every other container running on it.
+            - Containers are just isolated processes running on the host OS. They use kernel features called namespaces (to hide files/processes from each other) and cgroups (to limit resource usage). However, they all talk to the exact same host kernel to execute tasks like writing data or sending network packets.
+− Virtualization (virtual machines (VMs))
+    - hypervisor runs multiple VMs, on one physical host
+    - example: VMware, microsoft
+    - advantage: isolation, snapshot recovery, efficient resource use
+    - risk: VM escape, hypervisor attacks, VM sprawl, resource exhaustion
+    -  Every VM has its own separate guest operating system and kernel. If a virus destroys the kernel of VM #1, VM #2 is completely unaffected because they are physically separated by a hypervisor.
+−IoT (Internet of Things)
+    - Internet-connected smart devices.
+    - examples: smart cameras, smart thermostas, wearables
+    - risk: weak passwords, rare patching, insecure firmware, large botnets. 
+−Industrial control systems (ICS)/supervisory control and data acquisition (SCADA)
+    - used in Industrial environment (power plant, manufacturing, water treatment)
+    - monitor / controls systems.
+    - in ICS, availability and safety are most important compare to confidentiality. 
+    - risk: legacy systems, limited patching, physical consequences, nation-state attacks
 −Real-time operating system (RTOS)
+    - Processes data immediately within strict timing requirements.
+    - used in : medical devices, autootive systems, robotics.
+    - advantage: predictable timing, reliablity
+    - risk: minimal security features, difficult patching, resource limitation
 −Embedded systems
-−High availability
-## • Considerations
-−Availability
-−Resilience
-−Cost
-−Responsiveness
-−Scalability
-−Ease of deployment
-−Risk transference
-−Ease of recovery
-−Patch availability
-−Inability to patch
-−Power
-−Compute
+    - Dedicated-purpose computers inside devices.
+    - e.g printers, routers, cars, medical devices
+    - risk: hardcoded credentials, rare updates, physical exposures, limited resources
+−High availability (HA)
+    - Systems designed to stay online.
+    - methods: redundancy, clutering, failover, load balancing
+    - advantage: reduces downtime, improves resilence
+    - risk: more complexity, misconfiguration failover, increased attack surface
+- Considerations (These are factors organizations evaluate when choosing architectures.)
+    −Availability
+        - System uptime.
+        - Attacks like DDoS and −Ransomware affect availability
+    −Resilience
+        - Ability to recover from failures/attacks.
+        - e.g backups, redundancy, disaster recovery
+    −Cost
+        - security solution must balance
+        - budget, risk, performance
+    −Responsiveness
+        - How quickly systems react.
+        - important for: RTOS, ICS, cloud autoscaling
+    −Scalability
+        - Ability to grow without performance loss.
+        - Cloud and microservices scale well.
+    −Ease of deployment
+        - How quickly systems can be deployed.
+        - Containers and IaC improve this.
+    −Risk transference
+        - Shifting risk to another party.
+        - e.g cyber insurance, cloud providers, managed service providers
+    −Ease of recovery
+        - How quickly systems can be restored.
+        - e.g VM snapshots, backups, IaC redeployment 
+    −Patch availability
+        - Can updates be obtained quickly?
+        - important for: OS, firmware, third-party software
+    −Inability to patch
+        - Some systems cannot be patched due to: legacy hardware, ICS updatime requirements, vendor limitation
+        - compensating controls: segmentation, firewalls, minitoring
+    −Power
+        - critical for: datacenters, IoT, embedeed system
+        - controls UPS, Generators, redundant power
+    −Compute
+        - Processing capability.
+        - more compute = better performance, more VM / container support
+        - but also means, more heat, more power use, more cost.
+
+
+
 Given a scenario, apply security principles to secure enterprise infrastructure.
 - Infrastructure considerations
 −Device placement
